@@ -66,9 +66,8 @@ const update = (req, res) => {
 const findUsers = (req, res) => {
   const type = req.query.type
   
-
-  req.session.destroy();
   res.json(usersDao.findAllUsers())
+  req.session.destroy();
 }
 
 export default AuthController;

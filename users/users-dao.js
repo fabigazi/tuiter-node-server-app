@@ -1,6 +1,4 @@
-
 import usersModel from "./users-model.js";
-
 
 export const findAllUsers = () =>
   usersModel.find();
@@ -16,4 +14,3 @@ export const updateUser = (id, user) =>
   usersModel.updateOne({ _id: id }, { $set: user });
 export const deleteUser = (id) =>
   usersModel.deleteOne({ _id: id });
-

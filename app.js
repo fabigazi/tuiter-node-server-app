@@ -14,9 +14,14 @@ mongoose.connect(
 );
 
 const app = express()
+app.use(cors({
+  credentials: true,
+  origin: ["https://a6--amazing-bombolone-d11215.netlify.app", "http://localhost:3000"]
+})
+)
 app.use(
   session({
-    secret: 'your-secret-key',
+    secret: 'any string',
     resave: false,
     proxy: true,
     saveUninitialized: false,
@@ -27,15 +32,12 @@ app.use(
     },
   })
 );
-app.use(cors({
-    credentials: true,
-    origin: ["https://a6--amazing-bombolone-d11215.netlify.app", "http://localhost:3000"]
-  })
- )
+
 app.use(express.json());
 AuthController(app)
 TuitsController(app);
 HelloController(app)
 UserController(app)
 
+const port = process.env.PORT || 4000;
 app.listen(4000)

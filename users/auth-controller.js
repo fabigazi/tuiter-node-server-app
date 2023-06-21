@@ -2,14 +2,16 @@ import * as usersDao from "./users-dao.js";
 var currentUserVar;
 
 
+
+
 const AuthController = (app) => {
 
   app.get("/api/users/new", findAllUsers);
   app.post("/api/users/register", register);
   app.post("/api/users/login", login);
-  app.get("/api/users/profile", findUserById);
+  app.get("/api/users/profile", profile);
   app.post("/api/users/logout", logout);
-  app.put("/api/users", updateUser);
+  app.put("/api/users", update);
 };
 
 const login = async (req, res) => {
@@ -19,7 +21,8 @@ const login = async (req, res) => {
     const user = await usersDao.findUserByCredentials(username, password);
     if (user) {
       req.session["currentUser"] = user;
-      res.json(user);
+      res.json(req.session["currentUser"]);
+      //res.json(req.session);
     } else {
       res.sendStatus(403);
     }
@@ -29,17 +32,15 @@ const login = async (req, res) => {
 };
 
 
-const findUserById = async (req, res) => {
-  const id = req.params.id;
-  const user = await usersDao.findUserById(id);
-  res.json(user);
+const profile = (req, res) => {
+  const currentUser = req.session["currentUser"];
+  if (currentUser) {
+    res.json(currentUser);
+  } else {
+    res.json(req.session);
+    //res.sendStatus(404);
+  }
 };
-
-const createUser = async (req, res) => {
-  const newUser = await usersDao.createUser(req.body);
-  res.json(newUser);
-};
-
 
 const register = async (req, res) => {
   const user = await usersDao.findUserByUsername(req.body.username);
@@ -47,23 +48,40 @@ const register = async (req, res) => {
     res.sendStatus(403);
     return;
   }
-  const newUser = await userDao.createUser(req.body);
+  const newUser = await usersDao.createUser(req.body);
   req.session["currentUser"] = newUser;
   res.json(newUser);
 };
 
 
-const logout = async (req, res) => {
+const logout = (req, res) => {
   req.session.destroy();
   res.sendStatus(200);
 };
 
-const updateUser = async (req, res) => {
-  const id = req.params.id;
-  const status = await usersDao.updateUser(id, req.body);
+const update = async (req, res) => {
+  let currentUser = req.session["currentUser"];
+  const updates = req.body;
+
+  const status = await usersDao.updateUser(currentUser._id, req.body);
   const user = await usersDao.findUserById(id);
+
   req.session["currentUser"] = user;
   res.json(status);
+
+};
+
+const findUsers = (req, res) => {
+  const type = req.query.type
+
+  res.json(usersDao.findAllUsers())
+  req.session.destroy();
+}
+
+const findUserById = async (req, res) => {
+  const id = req.params.id;
+  const user = await usersDao.findUserById(id);
+  res.json(user);
 };
 
 
@@ -73,29 +91,33 @@ const findAllUsers = async (req, res) => {
   if (username && password) {
     const user = await usersDao.findUserByCredentials(username, password);
     if (user) {
-      res.json(user);
+      //res.json(user);
+      res.json(req.session);
     } else {
       res.sendStatus(404);
     }
   } else if (username) {
     const user = await usersDao.findUserByUsername(username);
     if (user) {
-      res.json(user);
+      //res.json(user);
+      res.json(req.session);
     } else {
       res.sendStatus(404);
     }
   } else {
     const users = await usersDao.findAllUsers();
-    res.json(users);
+    //res.json(users);
+    res.json(req.session);
   }
 };
-
 
 const deleteUser = async (req, res) => {
   const id = req.params.id;
   const status = await usersDao.deleteUser(id);
   res.json(status);
 };
+
+
 
 
 

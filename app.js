@@ -24,14 +24,12 @@ app.use(
     secret: 'any string',
     resave: false,
     proxy: true,
-    saveUninitialized: false,
+    saveUninitialized: true,
     //store: new session.MemoryStore(),
-    cookie: {
-      sameSite: "none",
-      secure: true,
-    },
   })
 );
+
+app.set('trust proxy', 1)
 
 app.use(express.json());
 AuthController(app)

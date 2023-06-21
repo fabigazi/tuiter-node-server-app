@@ -2,8 +2,6 @@ import * as usersDao from "./users-dao.js";
 var currentUserVar;
 
 
-
-
 const AuthController = (app) => {
 
   app.get("/api/users/new", findAllUsers);
@@ -22,7 +20,6 @@ const login = async (req, res) => {
     if (user) {
       req.session["currentUser"] = user;
       res.json(req.session["currentUser"]);
-      //res.json(req.session);
     } else {
       res.sendStatus(403);
     }
@@ -37,8 +34,7 @@ const profile = (req, res) => {
   if (currentUser) {
     res.json(currentUser);
   } else {
-    res.json(req.session);
-    //res.sendStatus(404);
+    res.sendStatus(404);
   }
 };
 
@@ -91,23 +87,20 @@ const findAllUsers = async (req, res) => {
   if (username && password) {
     const user = await usersDao.findUserByCredentials(username, password);
     if (user) {
-      //res.json(user);
-      res.json(req.session);
+      res.json(user);
     } else {
       res.sendStatus(404);
     }
   } else if (username) {
     const user = await usersDao.findUserByUsername(username);
     if (user) {
-      //res.json(user);
-      res.json(req.session);
+      res.json(user);
     } else {
       res.sendStatus(404);
     }
   } else {
     const users = await usersDao.findAllUsers();
-    //res.json(users);
-    res.json(req.session);
+    res.json(users);
   }
 };
 

@@ -57,10 +57,9 @@ const logout = (req, res) => {
 
 const update = async (req, res) => {
   let currentUser = req.session["currentUser"];
-  const updates = req.body;
 
-  const status = await usersDao.updateUser(currentUser._id, req.body);
-  const user = await usersDao.findUserById(id);
+  const status = await usersDao.updateUser(currentUser["_id"], req.body);
+  const user = await usersDao.findUserById(currentUser["_id"]);
 
   req.session["currentUser"] = user;
   res.json(status);
